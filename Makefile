@@ -9,4 +9,4 @@ debug: build/debug
 build/debug: main.c stb_image.h stb_image_resize2.h
 	gcc -o build/debug main.c -lm -g
 
-all: build/ascgen build/debug
+all: build/asciigen build/debug
