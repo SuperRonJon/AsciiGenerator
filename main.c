@@ -120,8 +120,8 @@ typedef struct config {
 
 config default_config() {
     config conf;
-    conf.filename = malloc(50);
-    strcpy(conf.filename, "");
+    conf.filename = malloc(1);
+    strcpy_s(conf.filename, 1, "");
     conf.invert = false;
     conf.h_scaling = -1.0;
     conf.w_scaling = -1.0;
@@ -209,7 +209,8 @@ int main(int argc, char** argv) {
     double height_scale = even_scaling ? conf.scaling : conf.h_scaling;
 
     image_data img = open_image(conf.filename);
-    scale_image(&img, width_scale, height_scale);
+    if(width_scale != 1.0 || height_scale != 1.0)
+        scale_image(&img, width_scale, height_scale);
     char* art = image_to_string(&img, conf.invert);
     if(!art) {
         fprintf(stderr, "Error creating art string... Unable to allocate memory\n");
