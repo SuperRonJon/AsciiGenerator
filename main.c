@@ -42,12 +42,12 @@ double get_pixel_brightness(const image_data* image, const int x, const int y) {
 void resize_image(image_data* img, const int new_width, const int new_height) {
     unsigned char* resized_data = (unsigned char*)malloc(new_width*new_height*img->channel_count);
     if(!resized_data) {
-        fprintf(stderr, "Failed to allocate memory for resized image\n");
+        fputs("Failed to allocate memory for resized image\n", stderr);
         exit(1);
     }
     stbir_resize_uint8_linear(img->data, img->width, img->height, 0, resized_data, new_width, new_height, 0, img->channel_count);
     if(!resized_data) {
-        fprintf(stderr, "Failed to resize image...\n");
+        fputs("Failed to resize image...\n", stderr);
         exit(1);
     }
     stbi_image_free(img->data);
@@ -104,7 +104,7 @@ image_data open_image(const char* filename) {
         if(strcmp(reason, "can't fopen") == 0) {
             fprintf(stderr, " - the file %s may not exist.", filename);
         }
-        fprintf(stderr, "\n");
+        fputs("\n", stderr);
         exit(1);
     }
     return pack_image(data, width, height, channel_count);
@@ -134,14 +134,14 @@ void print_version() {
 }
 
 void print_help() {
-    printf("Usage:\n       asciigen [options] image.png\n");
-    printf("Options:\n");
-    printf("    -i              inverts light and dark colors. Brightest pixels use densest characters\n");
-    printf("    -w scale        Width scaling factor. Output's width will be original_width * scale\n");
-    printf("    -h scale        Height scaling factor. Output's height will be original_height * scale\n");
-    printf("    -s scale        Even scaling factor. Output's dimensions will be original * scale\n");
-    printf("    -v, --version   Prints version\n");
-    printf("    -H, --help      Prints help\n");
+    puts("Usage:\n       asciigen [options] image.png");
+    puts("Options:");
+    puts("    -i              inverts light and dark colors. Brightest pixels use densest characters");
+    puts("    -w scale        Width scaling factor. Output's width will be original_width * scale");
+    puts("    -h scale        Height scaling factor. Output's height will be original_height * scale");
+    puts("    -s scale        Even scaling factor. Output's dimensions will be original * scale");
+    puts("    -v, --version   Prints version");
+    puts("    -H, --help      Prints help");
 }
 
 void set_config(config* conf, int argc, char** argv) {
@@ -209,7 +209,7 @@ void set_config(config* conf, int argc, char** argv) {
         free(conf->filename);
         conf->filename = strdup(argv[argc-1]);
         if(!conf->filename) {
-            fprintf(stderr, "Error allocating memory for filename...\n");
+            fputs("Error allocating memory for filename...\n", stderr);
             exit(1);
         }
     }
@@ -217,7 +217,7 @@ void set_config(config* conf, int argc, char** argv) {
     bool height_valid = conf->h_scaling > 0.0;
     bool even_scaling = !width_valid && !height_valid;
     if(!even_scaling && (!width_valid || !height_valid)) {
-        fprintf(stderr, "Invalid scaling parameters.\nIf not using equivalent scaling for height and width (-s) both height and width must be supplied and greater than 0.\n");
+        fputs("Invalid scaling parameters.\nIf not using equivalent scaling for height and width (-s) both height and width must be supplied and greater than 0.\n", stderr);
         exit(1);
     }
     if(even_scaling) {
@@ -241,10 +241,10 @@ int main(int argc, char** argv) {
         scale_image(&img, conf.w_scaling, conf.h_scaling);
     char* art = image_to_string(&img, conf.invert);
     if(!art) {
-        fprintf(stderr, "Error creating art string... Unable to allocate memory\n");
+        fputs("Error creating art string... Unable to allocate memory\n", stderr);
         return 1;
     }
-    printf("%s", art);
+    puts(art);
     free(art);
     free(conf.filename);
     stbi_image_free(img.data);
