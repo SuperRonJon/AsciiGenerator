@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -48,7 +49,7 @@ image_data open_image(char* filename) {
     if(!data) {
         const char* reason = stbi_failure_reason();
         fprintf(stderr, "Error loading image: %s", reason);
-        if(reason == "can't fopen") {
+        if(strcmp(reason, "can't fopen") == 0) {
             fprintf(stderr, " - the file %s may not exist.", filename);
         }
         fprintf(stderr, "\n");
