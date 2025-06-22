@@ -1,3 +1,8 @@
+/*
+* asciigen - CLI Ascii Art generator from image files 
+* Copyright (c) 2025 Patrick Seute
+*/
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
@@ -32,30 +37,6 @@ double get_pixel_brightness(image_data* image, int x, int y) {
 
     double brightness = sqrt((pr * pow(red, 2)) + (pg * pow(green, 2)) + (pb * pow(blue, 2)));
     return brightness * (alpha / 255.0);
-}
-
-image_data pack_image(unsigned char* data, int width, int height, int channel_count) {
-    image_data result;
-    result.data = data;
-    result.width = width;
-    result.height = height;
-    result.channel_count = channel_count;
-    return result;
-}
-
-image_data open_image(char* filename) {
-    int width, height, channel_count;
-    unsigned char* data = stbi_load(filename, &width, &height, &channel_count, 0);
-    if(!data) {
-        const char* reason = stbi_failure_reason();
-        fprintf(stderr, "Error loading image: %s", reason);
-        if(strcmp(reason, "can't fopen") == 0) {
-            fprintf(stderr, " - the file %s may not exist.", filename);
-        }
-        fprintf(stderr, "\n");
-        exit(1);
-    }
-    return pack_image(data, width, height, channel_count);
 }
 
 void resize_image(image_data* img, int new_width, int new_height) {
@@ -103,6 +84,30 @@ char* image_to_string(image_data* img, bool invert) {
     }
     result_str[result_itr] = '\0';
     return result_str;
+}
+
+image_data pack_image(unsigned char* data, int width, int height, int channel_count) {
+    image_data result;
+    result.data = data;
+    result.width = width;
+    result.height = height;
+    result.channel_count = channel_count;
+    return result;
+}
+
+image_data open_image(char* filename) {
+    int width, height, channel_count;
+    unsigned char* data = stbi_load(filename, &width, &height, &channel_count, 0);
+    if(!data) {
+        const char* reason = stbi_failure_reason();
+        fprintf(stderr, "Error loading image: %s", reason);
+        if(strcmp(reason, "can't fopen") == 0) {
+            fprintf(stderr, " - the file %s may not exist.", filename);
+        }
+        fprintf(stderr, "\n");
+        exit(1);
+    }
+    return pack_image(data, width, height, channel_count);
 }
 
 typedef struct config {
