@@ -23,13 +23,13 @@ typedef struct image_data {
     int channel_count;
 } image_data;
 
-double get_pixel_brightness(image_data* image, int x, int y) {
-    int pixel_index = (y * image->width + x) * image->channel_count;
+double get_pixel_brightness(const image_data* image, const int x, const int y) {
+    const int pixel_index = (y * image->width + x) * image->channel_count;
 
-    int red = (int)image->data[pixel_index];
-    int green = (int)image->data[pixel_index+1];
-    int blue = (int)image->data[pixel_index+2];
-    int alpha = image->channel_count >= 4 ? (int)image->data[pixel_index+3] : 255;
+    const int red = (int)image->data[pixel_index];
+    const int green = (int)image->data[pixel_index+1];
+    const int blue = (int)image->data[pixel_index+2];
+    const int alpha = image->channel_count >= 4 ? (int)image->data[pixel_index+3] : 255;
 
     const double pr = 0.299;
     const double pg = 0.587;
@@ -39,7 +39,7 @@ double get_pixel_brightness(image_data* image, int x, int y) {
     return brightness * (alpha / 255.0);
 }
 
-void resize_image(image_data* img, int new_width, int new_height) {
+void resize_image(image_data* img, const int new_width, const int new_height) {
     unsigned char* resized_data = (unsigned char*)malloc(new_width*new_height*img->channel_count);
     if(!resized_data) {
         fprintf(stderr, "Failed to allocate memory for resized image\n");
@@ -56,17 +56,17 @@ void resize_image(image_data* img, int new_width, int new_height) {
     img->height = new_height;
 }
 
-void scale_image(image_data* img, double w_scale, double h_scale) {
-    int new_width = (int)(img->width * w_scale);
-    int new_height = (int)(img->height * h_scale);
+void scale_image(image_data* img, const double w_scale, const double h_scale) {
+    const int new_width = (int)(img->width * w_scale);
+    const int new_height = (int)(img->height * h_scale);
     resize_image(img, new_width, new_height);
 }
 
-char* image_to_string(image_data* img, bool invert) {
+char* image_to_string(const image_data* img, bool invert) {
     const int CHARACTERS_LENGTH = 10;
     const char characters[10] = {'@', '%', '#', '*', '+', '=', '-', ':', '.', ' '};
     const char characters_inverse[10] = {' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'};
-    size_t char_count = (img->width * img->height) + img->height + 1;
+    const size_t char_count = (img->width * img->height) + img->height + 1;
     char* result_str = malloc(char_count);
     int result_itr = 0;
     if(result_str == NULL) {
@@ -95,7 +95,7 @@ image_data pack_image(unsigned char* data, int width, int height, int channel_co
     return result;
 }
 
-image_data open_image(char* filename) {
+image_data open_image(const char* filename) {
     int width, height, channel_count;
     unsigned char* data = stbi_load(filename, &width, &height, &channel_count, 0);
     if(!data) {
@@ -214,15 +214,15 @@ int main(int argc, char** argv) {
     config conf = default_config();
     set_config(&conf, argc, argv);
     
-    bool width_valid = conf.w_scaling > 0.0;
-    bool height_valid = conf.h_scaling > 0.0;
-    bool even_scaling = ! width_valid && !height_valid;
+    const bool width_valid = conf.w_scaling > 0.0;
+    const bool height_valid = conf.h_scaling > 0.0;
+    const bool even_scaling = ! width_valid && !height_valid;
     if(!even_scaling && (!width_valid || !height_valid)) {
         fprintf(stderr, "Invalid scaling parameters.\nIf not using equivalent scaling for height and width (-s) both height and width must be supplied and greater than 0.\n");
         return 1;
     }
-    double width_scale = even_scaling ? conf.scaling : conf.w_scaling;
-    double height_scale = even_scaling ? conf.scaling : conf.h_scaling;
+    const double width_scale = even_scaling ? conf.scaling : conf.w_scaling;
+    const double height_scale = even_scaling ? conf.scaling : conf.h_scaling;
 
     image_data img = open_image(conf.filename);
     if(width_scale != 1.0 || height_scale != 1.0)
