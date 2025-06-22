@@ -4,19 +4,20 @@ CLI Ascii Art Generator from image file.
 ## Installation
 Pre-build binaries available for Windows & Linux x86_64 from the [releases page](https://github.com/SuperRonJon/AsciiGenerator/releases)
 
-It can also be easily built from source. Building requires only gcc & make. Clone the repository and run `mkdir build && make`.
+It can also be easily built from source. Building requires only gcc, and optionally make. Clone the repository and run `mkdir build && make` or `gcc -O2 -o asciigen main.c -lm` with gcc only.
 
 ## Options/Usage
 ```
+-> $ asciigen --help
 Usage:
        asciigen [options] image.png
 Options:
-    -i          inverts light and dark colors. Brightest pixels use densest characters
-    -w scale    Width scaling factor. Output's width will be original_width * scale
-    -h scale    Height scaling factor. Output's height will be original_height * scale
-    -s scale    Even scaling factor. Output's dimensions will be original * scale
-    -v          Prints version
-    -H          Prints help
+    -i              inverts light and dark colors. Brightest pixels use densest characters
+    -w scale        Width scaling factor. Output's width will be original_width * scale
+    -h scale        Height scaling factor. Output's height will be original_height * scale
+    -s scale        Even scaling factor. Output's dimensions will be original * scale
+    -v, --version   Prints version
+    -H, --help      Prints help
 ```
 
 Scaling factor values are floating point values that indicate the amount to scale the original image by.
