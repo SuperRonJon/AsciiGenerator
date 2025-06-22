@@ -26,10 +26,10 @@ typedef struct image_data {
 double get_pixel_brightness(const image_data* image, const int x, const int y) {
     const int pixel_index = (y * image->width + x) * image->channel_count;
 
-    const int red = (int)image->data[pixel_index];
-    const int green = (int)image->data[pixel_index+1];
-    const int blue = (int)image->data[pixel_index+2];
-    const int alpha = image->channel_count >= 4 ? (int)image->data[pixel_index+3] : 255;
+    const uint8_t red = (uint8_t)image->data[pixel_index];
+    const uint8_t green = (uint8_t)image->data[pixel_index+1];
+    const uint8_t blue = (uint8_t)image->data[pixel_index+2];
+    const uint8_t alpha = image->channel_count >= 4 ? (uint8_t)image->data[pixel_index+3] : 255;
 
     const double pr = 0.299;
     const double pg = 0.587;
