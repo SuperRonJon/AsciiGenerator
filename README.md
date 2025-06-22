@@ -21,13 +21,13 @@ Options:
 
 Scaling factor values are floating point values that indicate the amount to scale the original image by.
 
-Ex. `asciigen --width 0.2 --height 0.1 image.png` will scale the ascii-art output's width down to 20% and height to 10% the original image.png's pixel resolution. This is equivalent to `asciigen -w 0.2 -h 0.1 image.png` using short flags, and is also equivalent to `asciigen -wh 0.2 0.1 image.png`
+Ex. `asciigen -w 0.2 -h 0.1 image.png` will scale the ascii-art output's width down to 20% and height to 10% the original image.png's pixel resolution. This is equivalent to  `asciigen -wh 0.2 0.1 image.png`
 
-Ex. `asciigen --invert --scaling 0.015 high-res-image.png` will scale both the height and width of high-res-image.png to 1.5% the original image's pixel resolution, as well as invert the color scale, so that bright colors to use the densest characters rather than vice-versa. This is equivalent to `asciigen -is 0.015 high-res-image.png`
+Ex. `asciigen -i -s 0.015 high-res-image.png` will scale both the height and width of high-res-image.png to 1.5% the original image's pixel resolution, as well as invert the color scale, so that bright colors to use the densest characters rather than vice-versa. This is equivalent to `asciigen -is 0.015 high-res-image.png`
 
 ## Example
 ```
--> $ asciigen -iw 0.015 -h 0.01 saturn.jpg
+-> $ asciigen -i -w 0.015 -h 0.01 saturn.jpg
 -> $ asciigen -iwh 0.015 0.01 saturn.jpg
 
                         .....
