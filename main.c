@@ -156,6 +156,7 @@ void set_config(config* conf, int argc, char** argv) {
                         index_mod++;
                         break;
                     case 'v':
+                    case 'V':
                         get_filename = false;
                         print_version();
                         exit(0);
