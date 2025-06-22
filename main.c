@@ -213,6 +213,18 @@ void set_config(config* conf, int argc, char** argv) {
             exit(1);
         }
     }
+    bool width_valid = conf->w_scaling > 0.0;
+    bool height_valid = conf->h_scaling > 0.0;
+    bool even_scaling = !width_valid && !height_valid;
+    if(!even_scaling && (!width_valid || !height_valid)) {
+        fprintf(stderr, "Invalid scaling parameters.\nIf not using equivalent scaling for height and width (-s) both height and width must be supplied and greater than 0.\n");
+        exit(1);
+    }
+    if(even_scaling) {
+        conf->w_scaling = conf->scaling;
+        conf->h_scaling = conf->scaling;
+    }
+
 }
 
 int main(int argc, char** argv) {
@@ -224,19 +236,9 @@ int main(int argc, char** argv) {
     config conf = default_config();
     set_config(&conf, argc, argv);
     
-    const bool width_valid = conf.w_scaling > 0.0;
-    const bool height_valid = conf.h_scaling > 0.0;
-    const bool even_scaling = ! width_valid && !height_valid;
-    if(!even_scaling && (!width_valid || !height_valid)) {
-        fprintf(stderr, "Invalid scaling parameters.\nIf not using equivalent scaling for height and width (-s) both height and width must be supplied and greater than 0.\n");
-        return 1;
-    }
-    const double width_scale = even_scaling ? conf.scaling : conf.w_scaling;
-    const double height_scale = even_scaling ? conf.scaling : conf.h_scaling;
-
     image_data img = open_image(conf.filename);
-    if(width_scale != 1.0 || height_scale != 1.0)
-        scale_image(&img, width_scale, height_scale);
+    if(conf.w_scaling != 1.0 || conf.h_scaling != 1.0)
+        scale_image(&img, conf.w_scaling, conf.h_scaling);
     char* art = image_to_string(&img, conf.invert);
     if(!art) {
         fprintf(stderr, "Error creating art string... Unable to allocate memory\n");
