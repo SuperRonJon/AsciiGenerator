@@ -136,12 +136,12 @@ void print_version() {
 void print_help() {
     printf("Usage:\n       asciigen [options] image.png\n");
     printf("Options:\n");
-    printf("    -i          inverts light and dark colors. Brightest pixels use densest characters\n");
-    printf("    -w scale    Width scaling factor. Output's width will be original_width * scale\n");
-    printf("    -h scale    Height scaling factor. Output's height will be original_height * scale\n");
-    printf("    -s scale    Even scaling factor. Output's dimensions will be original * scale\n");
-    printf("    -v          Prints version\n");
-    printf("    -H          Prints help\n");
+    printf("    -i              inverts light and dark colors. Brightest pixels use densest characters\n");
+    printf("    -w scale        Width scaling factor. Output's width will be original_width * scale\n");
+    printf("    -h scale        Height scaling factor. Output's height will be original_height * scale\n");
+    printf("    -s scale        Even scaling factor. Output's dimensions will be original * scale\n");
+    printf("    -v, --version   Prints version\n");
+    printf("    -H, --help      Prints help\n");
 }
 
 void set_config(config* conf, int argc, char** argv) {
@@ -152,7 +152,17 @@ void set_config(config* conf, int argc, char** argv) {
     for(int i = 1; i < argc; i++) {
         char* token = argv[i];
         int index_mod = 1;
-        if(token[0] == '-') {
+        if(strcmp(token, "--help") == 0) {
+            get_filename = false;
+            print_help();
+            exit(0);
+        }
+        else if(strcmp(token, "--version") == 0) {
+            get_filename = false;
+            print_version();
+            exit(0);
+        }
+        else if(token[0] == '-') {
             for(int j = 1; j < strlen(token); j++) {
                 char currOpt = token[j];
                 switch(currOpt) {
