@@ -7,6 +7,8 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image_resize2.h"
 
+#define VERSION "1.0"
+
 
 typedef struct image_data {
     unsigned char* data;
@@ -43,7 +45,7 @@ image_data pack_image(unsigned char* data, int width, int height, int channel_co
 image_data open_image(char* filename) {
     int width, height, channel_count;
     unsigned char* data = stbi_load(filename, &width, &height, &channel_count, 0);
-    if(data == NULL) {
+    if(!data) {
         const char* reason = stbi_failure_reason();
         fprintf(stderr, "Error loading image: %s", reason);
         if(reason == "can't fopen") {
@@ -57,12 +59,12 @@ image_data open_image(char* filename) {
 
 void resize_image(image_data* img, int new_width, int new_height) {
     unsigned char* resized_data = (unsigned char*)malloc(new_width*new_height*img->channel_count);
-    if(resized_data == NULL) {
+    if(!resized_data) {
         fprintf(stderr, "Failed to allocate memory for resized image\n");
         exit(1);
     }
     stbir_resize_uint8_linear(img->data, img->width, img->height, 0, resized_data, new_width, new_height, 0, img->channel_count);
-    if(resized_data == NULL) {
+    if(!resized_data) {
         fprintf(stderr, "Failed to resize image...\n");
         exit(1);
     }
@@ -121,7 +123,12 @@ config default_config() {
     return conf;
 }
 
+void print_version() {
+    printf("asciigen - v%s\n", VERSION);
+}
+
 void set_config(config* conf, int argc, char** argv) {
+    bool get_filename = true;
     int scaling_token_index = -1;
     int h_scaling_token_index = -1;
     int w_scaling_token_index = -1;
@@ -147,34 +154,38 @@ void set_config(config* conf, int argc, char** argv) {
                         h_scaling_token_index = i+index_mod;
                         index_mod++;
                         break;
+                    case 'v':
+                        get_filename = false;
+                        print_version();
+                        exit(0);
+                        break;
                 }
             }
         }
         else if(i == scaling_token_index && i != argc-1) {
-            char* end = NULL;
-            conf->scaling = strtod(argv[i], &end);
+            conf->scaling = strtod(argv[i], NULL);
         }
         else if(i == w_scaling_token_index && i != argc-1) {
-            char* end = NULL;
-            conf->w_scaling = strtod(argv[i], &end);
+            conf->w_scaling = strtod(argv[i], NULL);
         }
         else if(i == h_scaling_token_index && i != argc-1) {
-            char* end = NULL;
-            conf->h_scaling = strtod(argv[i], &end);
+            conf->h_scaling = strtod(argv[i], NULL);
         }
     }
-    free(conf->filename);
-    conf->filename = strdup(argv[argc-1]);
-    if(conf->filename == NULL) {
-        fprintf(stderr, "Error allocating memory for filename...\n");
-        exit(1);
+    if(get_filename) {
+        free(conf->filename);
+        conf->filename = strdup(argv[argc-1]);
+        if(!conf->filename) {
+            fprintf(stderr, "Error allocating memory for filename...\n");
+            exit(1);
+        }
     }
 }
 
 int main(int argc, char** argv) {
     if(argc < 2) {
-        fprintf(stderr, "No arguments provided, must at least submit a filename.\n");
-        return 1;
+        print_version();
+        return 0;
     }
 
     config conf = default_config();
@@ -193,7 +204,7 @@ int main(int argc, char** argv) {
     image_data img = open_image(conf.filename);
     scale_image(&img, width_scale, height_scale);
     char* art = image_to_string(&img, conf.invert);
-    if(art == NULL) {
+    if(!art) {
         fprintf(stderr, "Error creating art string... Unable to allocate memory\n");
         return 1;
     }
