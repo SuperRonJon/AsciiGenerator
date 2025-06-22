@@ -13,7 +13,7 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image_resize2.h"
 
-#define VERSION "1.0"
+#define VERSION "1.1"
 
 
 typedef struct image_data {
@@ -133,6 +133,17 @@ void print_version() {
     printf("asciigen - v%s\n", VERSION);
 }
 
+void print_help() {
+    printf("Usage:\n       asciigen [options] image.png\n");
+    printf("Options:\n");
+    printf("    -i          inverts light and dark colors. Brightest pixels use densest characters\n");
+    printf("    -w scale    Width scaling factor. Output's width will be original_width * scale\n");
+    printf("    -h scale    Height scaling factor. Output's height will be original_height * scale\n");
+    printf("    -s scale    Even scaling factor. Output's dimensions will be original * scale\n");
+    printf("    -v          Prints version\n");
+    printf("    -H          Prints help\n");
+}
+
 void set_config(config* conf, int argc, char** argv) {
     bool get_filename = true;
     int scaling_token_index = -1;
@@ -159,6 +170,11 @@ void set_config(config* conf, int argc, char** argv) {
                     case 'h':
                         h_scaling_token_index = i+index_mod;
                         index_mod++;
+                        break;
+                    case 'H':
+                        get_filename = false;
+                        print_help();
+                        exit(0);
                         break;
                     case 'v':
                     case 'V':
@@ -191,7 +207,7 @@ void set_config(config* conf, int argc, char** argv) {
 
 int main(int argc, char** argv) {
     if(argc < 2) {
-        print_version();
+        print_help();
         return 0;
     }
 
