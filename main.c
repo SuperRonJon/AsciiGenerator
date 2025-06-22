@@ -121,7 +121,7 @@ typedef struct config {
 config default_config() {
     config conf;
     conf.filename = malloc(1);
-    strcpy_s(conf.filename, 1, "");
+    strcpy(conf.filename, "");
     conf.invert = false;
     conf.h_scaling = -1.0;
     conf.w_scaling = -1.0;
