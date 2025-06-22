@@ -13,7 +13,7 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image_resize2.h"
 
-#define VERSION "1.1"
+#define VERSION "1.2"
 
 
 typedef struct image_data {
