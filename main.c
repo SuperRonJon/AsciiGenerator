@@ -164,7 +164,7 @@ void set_config(config* conf, int argc, char** argv) {
             exit(0);
         }
         else if(token[0] == '-') {
-            for(int j = 1; j < strlen(token); j++) {
+            for(size_t j = 1; j < strlen(token); j++) {
                 char currOpt = token[j];
                 switch(currOpt) {
                     case 'i':
