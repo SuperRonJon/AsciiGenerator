@@ -241,6 +241,7 @@ int main(int argc, char** argv) {
     if(conf.w_scaling != 1.0 || conf.h_scaling != 1.0)
         scale_image(&img, conf.w_scaling, conf.h_scaling);
     char* art = image_to_string(&img, conf.invert);
+    stbi_image_free(img.data);
     if(!art) {
         fputs("Error creating art string... Unable to allocate memory\n", stderr);
         return 1;
@@ -248,6 +249,5 @@ int main(int argc, char** argv) {
     puts(art);
     free(art);
     free(conf.filename);
-    stbi_image_free(img.data);
     return 0;
 }
