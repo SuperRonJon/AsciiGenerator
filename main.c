@@ -14,7 +14,7 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image_resize2.h"
 
-#define VERSION "1.2"
+#define VERSION "1.3"
 
 
 typedef struct image_data {
@@ -46,7 +46,7 @@ void resize_image(image_data* img, const int new_width, const int new_height) {
         fputs("Failed to allocate memory for resized image\n", stderr);
         exit(1);
     }
-    stbir_resize_uint8_linear(img->data, img->width, img->height, 0, resized_data, new_width, new_height, 0, img->channel_count);
+    stbir_resize(img->data, img->width, img->height, 0, resized_data, new_width, new_height, 0, img->channel_count, STBIR_TYPE_UINT8, STBIR_EDGE_CLAMP, STBIR_FILTER_POINT_SAMPLE);
     if(!resized_data) {
         fputs("Failed to resize image...\n", stderr);
         exit(1);
