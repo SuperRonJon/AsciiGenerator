@@ -41,12 +41,18 @@ double get_pixel_brightness(const image_data* image, const int x, const int y) {
 }
 
 void resize_image(image_data* img, const int new_width, const int new_height) {
-    unsigned char* resized_data = (unsigned char*)malloc(new_width*new_height*img->channel_count);
+    unsigned char* resized_data = malloc(new_width*new_height*img->channel_count);
     if(!resized_data) {
         fputs("Failed to allocate memory for resized image\n", stderr);
         exit(1);
     }
-    stbir_resize(img->data, img->width, img->height, 0, resized_data, new_width, new_height, 0, img->channel_count, STBIR_TYPE_UINT8, STBIR_EDGE_CLAMP, STBIR_FILTER_POINT_SAMPLE);
+
+    stbir_resize(
+        img->data, img->width, img->height, 0, 
+        resized_data, new_width, new_height, 0, img->channel_count, 
+        STBIR_TYPE_UINT8, STBIR_EDGE_CLAMP, STBIR_FILTER_POINT_SAMPLE
+    );
+
     if(!resized_data) {
         fputs("Failed to resize image...\n", stderr);
         exit(1);
@@ -137,12 +143,12 @@ void print_version() {
 void print_help() {
     puts("Usage:\n       asciigen [options] image.png");
     puts("Options:");
-    puts("    -i              inverts light and dark colors. Brightest pixels use densest characters");
-    puts("    -w scale        Width scaling factor. Output's width will be original_width * scale");
-    puts("    -h scale        Height scaling factor. Output's height will be original_height * scale");
-    puts("    -s scale        Even scaling factor. Output's dimensions will be original * scale");
-    puts("    -v, --version   Prints version");
-    puts("    -H, --help      Prints help");
+    puts("  -i              inverts light and dark colors. Brightest pixels use densest characters");
+    puts("  -w scale        Width scaling factor. Output's width will be original_width * scale");
+    puts("  -h scale        Height scaling factor. Output's height will be original_height * scale");
+    puts("  -s scale        Even scaling factor. Output's dimensions will be original * scale");
+    puts("  -v, --version   Prints version");
+    puts("  -H, --help      Prints help");
 }
 
 void set_config(config* conf, int argc, char** argv) {
