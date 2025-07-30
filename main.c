@@ -125,7 +125,7 @@ typedef struct config {
     double scaling;
 } config;
 
-config default_config() {
+config default_config(void) {
     config conf;
     conf.filename = malloc(1);
     strncpy(conf.filename, "\0", 1);
@@ -136,11 +136,11 @@ config default_config() {
     return conf;
 }
 
-void print_version() {
+void print_version(void) {
     printf("asciigen - v%s\n", VERSION);
 }
 
-void print_help() {
+void print_help(void) {
     puts("Usage:\n       asciigen [options] image.png");
     puts("Options:");
     puts("  -i              inverts light and dark colors. Brightest pixels use densest characters");
