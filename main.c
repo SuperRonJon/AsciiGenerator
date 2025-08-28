@@ -14,7 +14,7 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image_resize2.h"
 
-#define VERSION "1.3"
+#define VERSION "1.4"
 
 
 typedef struct image_data {
@@ -36,7 +36,7 @@ double get_pixel_brightness(const image_data* image, const int x, const int y) {
     const double pg = 0.587;
     const double pb = 0.114;
 
-    double brightness = sqrt((pr * pow(red, 2)) + (pg * pow(green, 2)) + (pb * pow(blue, 2)));
+    double brightness = sqrt((pr * red * red) + (pg * green * green) + (pb * blue * blue));
     return brightness * (alpha / 255.0);
 }
 
