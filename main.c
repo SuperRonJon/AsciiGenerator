@@ -70,9 +70,8 @@ void scale_image(image_data* img, const double w_scale, const double h_scale) {
 }
 
 char* image_to_string(const image_data* img, bool invert) {
-    const int CHARACTERS_LENGTH = 10;
-    const char characters[10] = {'@', '%', '#', '*', '+', '=', '-', ':', '.', ' '};
-    const char characters_inverse[10] = {' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'};
+    const char characters[] = "@%#*+=-:. ";
+    const int chars_length = strlen(characters);
     const size_t char_count = (img->width * img->height) + img->height + 1;
     char* result_str = malloc(char_count);
     int result_itr = 0;
@@ -82,8 +81,8 @@ char* image_to_string(const image_data* img, bool invert) {
     for(int row = 0; row < img->height; row++) {
         for(int col = 0; col < img->width; col++) {
             double brightness = get_pixel_brightness(img, col, row);
-            int char_index = (int)(brightness / (255.1 / CHARACTERS_LENGTH));
-            result_str[result_itr] = invert ? characters_inverse[char_index] : characters[char_index];
+            int char_index = (int)(brightness / (255.1 / chars_length));
+            result_str[result_itr] = invert ? characters[chars_length - 1 - char_index] : characters[char_index];
             result_itr++;
         }
         result_str[result_itr] = '\n';
