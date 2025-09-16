@@ -18,13 +18,13 @@
 
 
 typedef struct image_data {
-    unsigned char* data;
+    unsigned char *data;
     int height;
     int width;
     int channel_count;
 } image_data;
 
-double get_pixel_brightness(const image_data* image, const int x, const int y) {
+double get_pixel_brightness(const image_data *image, const int x, const int y) {
     const int pixel_index = (y * image->width + x) * image->channel_count;
 
     const uint8_t red = (uint8_t)image->data[pixel_index];
@@ -40,8 +40,8 @@ double get_pixel_brightness(const image_data* image, const int x, const int y) {
     return brightness * (alpha / 255.0);
 }
 
-void resize_image(image_data* img, const int new_width, const int new_height) {
-    unsigned char* resized_data = malloc(new_width*new_height*img->channel_count);
+void resize_image(image_data *img, const int new_width, const int new_height) {
+    unsigned char *resized_data = malloc(new_width*new_height*img->channel_count);
     if(!resized_data) {
         fputs("Failed to allocate memory for resized image\n", stderr);
         exit(1);
@@ -63,17 +63,17 @@ void resize_image(image_data* img, const int new_width, const int new_height) {
     img->height = new_height;
 }
 
-void scale_image(image_data* img, const double w_scale, const double h_scale) {
+void scale_image(image_data *img, const double w_scale, const double h_scale) {
     const int new_width = (int)(img->width * w_scale);
     const int new_height = (int)(img->height * h_scale);
     resize_image(img, new_width, new_height);
 }
 
-char* image_to_string(const image_data* img, bool invert) {
+char* image_to_string(const image_data *img, bool invert) {
     const char characters[] = "@%#*+=-:. ";
     const int chars_length = strlen(characters);
     const size_t char_count = (img->width * img->height) + img->height + 1;
-    char* result_str = malloc(char_count);
+    char *result_str = malloc(char_count);
     int result_itr = 0;
     if(result_str == NULL) {
         return NULL;
@@ -92,7 +92,7 @@ char* image_to_string(const image_data* img, bool invert) {
     return result_str;
 }
 
-image_data pack_image(unsigned char* data, int width, int height, int channel_count) {
+image_data pack_image(unsigned char *data, int width, int height, int channel_count) {
     image_data result;
     result.data = data;
     result.width = width;
@@ -101,11 +101,11 @@ image_data pack_image(unsigned char* data, int width, int height, int channel_co
     return result;
 }
 
-image_data open_image(const char* filename) {
+image_data open_image(const char *filename) {
     int width, height, channel_count;
-    unsigned char* data = stbi_load(filename, &width, &height, &channel_count, 0);
+    unsigned char *data = stbi_load(filename, &width, &height, &channel_count, 0);
     if(!data) {
-        const char* reason = stbi_failure_reason();
+        const char *reason = stbi_failure_reason();
         fprintf(stderr, "Error loading image: %s", reason);
         if(strcmp(reason, "can't fopen") == 0) {
             fprintf(stderr, " - the file %s may not exist.", filename);
@@ -117,7 +117,7 @@ image_data open_image(const char* filename) {
 }
 
 typedef struct config {
-    char* filename;
+    char *filename;
     bool invert;
     double w_scaling;
     double h_scaling;
@@ -150,13 +150,13 @@ void print_help(void) {
     puts("  -H, --help      Prints help");
 }
 
-void set_config(config* conf, int argc, char** argv) {
+void set_config(config *conf, int argc, char **argv) {
     bool get_filename = true;
     int scaling_token_index = -1;
     int h_scaling_token_index = -1;
     int w_scaling_token_index = -1;
     for(int i = 1; i < argc; i++) {
-        char* token = argv[i];
+        char *token = argv[i];
         int index_mod = 1;
         if(strcmp(token, "--help") == 0) {
             get_filename = false;
@@ -233,7 +233,7 @@ void set_config(config* conf, int argc, char** argv) {
 
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     if(argc < 2) {
         print_help();
         return 0;
@@ -245,7 +245,7 @@ int main(int argc, char** argv) {
     image_data img = open_image(conf.filename);
     if(conf.w_scaling != 1.0 || conf.h_scaling != 1.0)
         scale_image(&img, conf.w_scaling, conf.h_scaling);
-    char* art = image_to_string(&img, conf.invert);
+    char *art = image_to_string(&img, conf.invert);
     stbi_image_free(img.data);
     if(!art) {
         fputs("Error creating art string... Unable to allocate memory\n", stderr);
