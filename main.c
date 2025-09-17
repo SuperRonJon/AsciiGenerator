@@ -25,7 +25,7 @@ typedef struct image_data {
 } image_data;
 
 double get_pixel_brightness(const image_data *image, const int x, const int y) {
-    const int pixel_index = (y * image->width + x) * image->channel_count;
+    const size_t pixel_index = (y * image->width + x) * image->channel_count;
 
     const uint8_t red = (uint8_t)image->data[pixel_index];
     const uint8_t green = (uint8_t)image->data[pixel_index+1];
@@ -71,17 +71,17 @@ void scale_image(image_data *img, const double w_scale, const double h_scale) {
 
 char* image_to_string(const image_data *img, bool invert) {
     const char characters[] = "@%#*+=-:. ";
-    const int chars_length = strlen(characters);
+    const size_t chars_length = strlen(characters);
     const size_t char_count = (img->width * img->height) + img->height + 1;
     char *result_str = malloc(char_count);
-    int result_itr = 0;
+    size_t result_itr = 0;
     if(result_str == NULL) {
         return NULL;
     }
-    for(int row = 0; row < img->height; row++) {
-        for(int col = 0; col < img->width; col++) {
-            double brightness = get_pixel_brightness(img, col, row);
-            int char_index = (int)(brightness / (255.1 / chars_length));
+    for(int y = 0; y < img->height; y++) {
+        for(int x = 0; x < img->width; x++) {
+            const double brightness = get_pixel_brightness(img, x, y);
+            const size_t char_index = (int)(brightness / (255.1 / chars_length));
             result_str[result_itr] = invert ? characters[chars_length - 1 - char_index] : characters[char_index];
             result_itr++;
         }
