@@ -36,7 +36,7 @@ double get_pixel_brightness(const image_data *image, const int x, const int y) {
     const double pg = 0.587;
     const double pb = 0.114;
 
-    double brightness = sqrt((pr * red * red) + (pg * green * green) + (pb * blue * blue));
+    const double brightness = sqrt((pr * red * red) + (pg * green * green) + (pb * blue * blue));
     return brightness * (alpha / 255.0);
 }
 
@@ -219,9 +219,9 @@ void set_config(config *conf, int argc, char **argv) {
             exit(1);
         }
     }
-    bool width_valid = conf->w_scaling > 0.0;
-    bool height_valid = conf->h_scaling > 0.0;
-    bool even_scaling = !width_valid && !height_valid;
+    const bool width_valid = conf->w_scaling > 0.0;
+    const bool height_valid = conf->h_scaling > 0.0;
+    const bool even_scaling = !width_valid && !height_valid;
     if(!even_scaling && (!width_valid || !height_valid)) {
         fputs("Invalid scaling parameters.\nIf not using equivalent scaling for height and width (-s) both height and width must be supplied and greater than 0.\n", stderr);
         exit(1);
