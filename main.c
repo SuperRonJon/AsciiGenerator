@@ -135,6 +135,15 @@ config default_config(void) {
     return conf;
 }
 
+char* str_dup(const char *s) {
+    if(s == NULL) return NULL;
+    size_t len = strlen(s);
+    char *new_str = malloc(len+1);
+    if(new_str == NULL) return NULL;
+    strcpy(new_str, s);
+    return new_str;
+}
+
 void print_version(void) {
     printf("asciigen - v%s\n", VERSION);
 }
@@ -213,7 +222,7 @@ void set_config(config *conf, int argc, char **argv) {
     }
     if(get_filename) {
         free(conf->filename);
-        conf->filename = strdup(argv[argc-1]);
+        conf->filename = str_dup(argv[argc-1]);
         if(!conf->filename) {
             fputs("Error allocating memory for filename...\n", stderr);
             exit(1);
