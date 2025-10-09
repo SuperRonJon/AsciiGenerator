@@ -136,11 +136,15 @@ config default_config(void) {
 }
 
 char* str_dup(const char *s) {
-    if(s == NULL) return NULL;
-    size_t len = strlen(s);
-    char *new_str = malloc(len+1);
-    if(new_str == NULL) return NULL;
-    strcpy(new_str, s);
+    if(s == NULL) {
+        return NULL;
+    }
+    size_t size = strlen(s) + 1;
+    char *new_str = malloc(size);
+    if(new_str == NULL) {
+        return NULL;
+    }
+    strncpy(new_str, s, size);
     return new_str;
 }
 
