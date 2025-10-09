@@ -92,16 +92,7 @@ char* image_to_string(const image_data *img, bool invert) {
     return result_str;
 }
 
-image_data pack_image(unsigned char *data, int width, int height, int channel_count) {
-    image_data result;
-    result.data = data;
-    result.width = width;
-    result.height = height;
-    result.channel_count = channel_count;
-    return result;
-}
-
-image_data open_image(const char *filename) {
+void open_image(image_data *img, const char *filename) {
     int width, height, channel_count;
     unsigned char *data = stbi_load(filename, &width, &height, &channel_count, 0);
     if(!data) {
@@ -113,7 +104,10 @@ image_data open_image(const char *filename) {
         fputs("\n", stderr);
         exit(1);
     }
-    return pack_image(data, width, height, channel_count);
+    img->data = data;
+    img->width = width;
+    img->height = height;
+    img->channel_count = channel_count;
 }
 
 typedef struct config {
@@ -124,15 +118,13 @@ typedef struct config {
     double scaling;
 } config;
 
-config default_config(void) {
-    config conf;
-    conf.filename = malloc(1);
-    strncpy(conf.filename, "\0", 1);
-    conf.invert = false;
-    conf.h_scaling = -1.0;
-    conf.w_scaling = -1.0;
-    conf.scaling = 1.0;
-    return conf;
+void default_config(config *conf) {
+    conf->filename = malloc(1);
+    strncpy(conf->filename, "\0", 1);
+    conf->invert = false;
+    conf->h_scaling = -1.0;
+    conf->w_scaling = -1.0;
+    conf->scaling = 1.0;
 }
 
 char* str_dup(const char *s) {
@@ -164,6 +156,7 @@ void print_help(void) {
 }
 
 void set_config(config *conf, int argc, char **argv) {
+    default_config(conf);
     bool get_filename = true;
     int scaling_token_index = -1;
     int h_scaling_token_index = -1;
@@ -252,10 +245,11 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    config conf = default_config();
+    config conf;
     set_config(&conf, argc, argv);
     
-    image_data img = open_image(conf.filename);
+    image_data img;
+    open_image(&img, conf.filename);
     if(conf.w_scaling != 1.0 || conf.h_scaling != 1.0)
         scale_image(&img, conf.w_scaling, conf.h_scaling);
     char *art = image_to_string(&img, conf.invert);
