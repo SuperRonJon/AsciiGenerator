@@ -4,7 +4,8 @@ CLI Ascii Art Generator from image file.
 ## Installation
 Pre-build binaries available for Windows & Linux x86_64 from the [releases page](https://github.com/SuperRonJon/AsciiGenerator/releases)
 
-It can also be easily built from source. Building requires only gcc, and optionally make. Clone the repository and run `mkdir build && make` or `gcc -O2 -o asciigen main.c -lm` with gcc only.
+It can also be easily built from source with CMake, make, or gcc manually. Building manually requires only gcc. Clone the repository and run the correspoding build system command (Build instructions below)
+
 
 ## Options/Usage
 ```
@@ -47,3 +48,23 @@ Ex. `asciigen -i -s 0.015 high-res-image.png` will scale both the height and wid
            .....:::::::::::::::::::::.....
                  ...................
 ```
+
+## Building from source commands
+### CMake
+```
+  mkdir build
+  cd build
+  cmake ..
+  cmake --build .
+```
+### Make
+
+```
+  mkdir build
+  make
+``` 
+ ### Manually
+```
+  mkdir build
+  gcc -O2 -o build/asciigen main.c -lm
+``` 
