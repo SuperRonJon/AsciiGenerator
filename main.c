@@ -151,7 +151,7 @@ void print_help(void) {
     puts("  -w scale        Width scaling factor. Output's width will be original_width * scale");
     puts("  -h scale        Height scaling factor. Output's height will be original_height * scale");
     puts("  -s scale        Even scaling factor. Output's dimensions will be original * scale");
-    puts("  -c \"chars\"    Custom character set chars will be used rather than the default of \"@%#*+=-:. \"");
+    puts("  -c \"chars\"      Custom character set chars will be used rather than the default of \"@%#*+=-:. \"");
     puts("  -v, --version   Prints version");
     puts("  -H, --help      Prints help");
 }
