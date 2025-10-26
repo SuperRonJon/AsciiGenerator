@@ -17,6 +17,7 @@ Options:
     -w scale        Width scaling factor. Output's width will be original_width * scale
     -h scale        Height scaling factor. Output's height will be original_height * scale
     -s scale        Even scaling factor. Output's dimensions will be original * scale
+    -c "chars"      Custom character set chars will be used rather than the default of "@%#*+=-:. "
     -v, --version   Prints version
     -H, --help      Prints help
 ```
@@ -26,6 +27,8 @@ Scaling factor values are floating point values that indicate the amount to scal
 Ex. `asciigen -w 0.2 -h 0.1 image.png` will scale the ascii-art output's width down to 20% and height to 10% the original image.png's pixel resolution. This is equivalent to  `asciigen -wh 0.2 0.1 image.png`
 
 Ex. `asciigen -i -s 0.015 high-res-image.png` will scale both the height and width of high-res-image.png to 1.5% the original image's pixel resolution, as well as invert the color scale, so that bright colors to use the densest characters rather than vice-versa. This is equivalent to `asciigen -is 0.015 high-res-image.png`
+
+A custom character set can be used with the -c option. A string in quotes should be given as the value to the -c flag, the default character set of "@%#*+=-:. " is used if none is given. The default character set on the above example would be equivalent to running `asciigen -i -s 0.015 -c "@%#*+=-:. " high-res-image.png` or `asciigen -isc 0.015 "@%#*+=-:. " high-res-image.png`
 
 ## Example
 ```

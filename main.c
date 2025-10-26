@@ -14,7 +14,7 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image_resize2.h"
 
-#define VERSION "1.5"
+#define VERSION "1.6"
 
 
 typedef struct image_data {
@@ -69,8 +69,7 @@ void scale_image(image_data *img, const double w_scale, const double h_scale) {
     resize_image(img, new_width, new_height);
 }
 
-char* image_to_string(const image_data *img, bool invert) {
-    const char characters[] = "@%#*+=-:. ";
+char* image_to_string(const image_data *img, bool invert, char *characters) {
     const size_t chars_length = strlen(characters);
     const size_t char_count = (img->width * img->height) + img->height + 1;
     char *result_str = malloc(char_count);
@@ -112,20 +111,12 @@ void open_image(image_data *img, const char *filename) {
 
 typedef struct config {
     char *filename;
+    char *character_set;
     bool invert;
     double w_scaling;
     double h_scaling;
     double scaling;
 } config;
-
-void default_config(config *conf) {
-    conf->filename = malloc(1);
-    strncpy(conf->filename, "\0", 1);
-    conf->invert = false;
-    conf->h_scaling = -1.0;
-    conf->w_scaling = -1.0;
-    conf->scaling = 1.0;
-}
 
 char* str_dup(const char *s) {
     if(s == NULL) {
@@ -140,6 +131,15 @@ char* str_dup(const char *s) {
     return new_str;
 }
 
+void default_config(config *conf) {
+    conf->filename = str_dup("");
+    conf->character_set = str_dup("@%#*+=-:. ");
+    conf->invert = false;
+    conf->h_scaling = -1.0;
+    conf->w_scaling = -1.0;
+    conf->scaling = 1.0;
+}
+
 void print_version(void) {
     printf("asciigen - v%s\n", VERSION);
 }
@@ -151,6 +151,7 @@ void print_help(void) {
     puts("  -w scale        Width scaling factor. Output's width will be original_width * scale");
     puts("  -h scale        Height scaling factor. Output's height will be original_height * scale");
     puts("  -s scale        Even scaling factor. Output's dimensions will be original * scale");
+    puts("  -c \"chars\"    Custom character set chars will be used rather than the default of \"@%#*+=-:. \"");
     puts("  -v, --version   Prints version");
     puts("  -H, --help      Prints help");
 }
@@ -161,6 +162,7 @@ void set_config(config *conf, int argc, char **argv) {
     int scaling_token_index = -1;
     int h_scaling_token_index = -1;
     int w_scaling_token_index = -1;
+    int custom_characters_index = -1;
     for(int i = 1; i < argc; i++) {
         char *token = argv[i];
         int index_mod = 1;
@@ -193,6 +195,10 @@ void set_config(config *conf, int argc, char **argv) {
                         h_scaling_token_index = i+index_mod;
                         index_mod++;
                         break;
+                    case 'c':
+                        custom_characters_index = i+index_mod;
+                        index_mod++;
+                        break;
                     case 'H':
                         get_filename = false;
                         print_help();
@@ -215,6 +221,12 @@ void set_config(config *conf, int argc, char **argv) {
         }
         else if(i == h_scaling_token_index && i != argc-1) {
             conf->h_scaling = strtod(argv[i], NULL);
+        }
+        else if(i == custom_characters_index && i != argc-1) {
+            if(conf->character_set != NULL) {
+                free(conf->character_set);
+            }
+            conf->character_set = str_dup(argv[i]);
         }
     }
     if(get_filename) {
@@ -250,9 +262,11 @@ int main(int argc, char **argv) {
     
     image_data img;
     open_image(&img, conf.filename);
+    free(conf.filename);
     if(conf.w_scaling != 1.0 || conf.h_scaling != 1.0)
         scale_image(&img, conf.w_scaling, conf.h_scaling);
-    char *art = image_to_string(&img, conf.invert);
+    char *art = image_to_string(&img, conf.invert, conf.character_set);
+    free(conf.character_set);
     stbi_image_free(img.data);
     if(!art) {
         fputs("Error creating art string... Unable to allocate memory\n", stderr);
@@ -260,6 +274,5 @@ int main(int argc, char **argv) {
     }
     puts(art);
     free(art);
-    free(conf.filename);
     return 0;
 }
