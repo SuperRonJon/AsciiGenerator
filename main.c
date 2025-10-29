@@ -14,7 +14,7 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image_resize2.h"
 
-#define VERSION "1.6"
+#define VERSION "1.7"
 
 
 typedef struct image_data {
@@ -69,14 +69,45 @@ void scale_image(image_data *img, const double w_scale, const double h_scale) {
     resize_image(img, new_width, new_height);
 }
 
-char* image_to_string(const image_data *img, bool invert, char *characters) {
-    const size_t chars_length = strlen(characters);
-    const size_t char_count = (img->width * img->height) + img->height + 1;
-    char *result_str = malloc(char_count);
-    size_t result_itr = 0;
-    if(result_str == NULL) {
+char* str_dup(const char *s) {
+    if(s == NULL) {
         return NULL;
     }
+    size_t size = strlen(s) + 1;
+    char *new_str = malloc(size);
+    if(new_str == NULL) {
+        return NULL;
+    }
+    strncpy(new_str, s, size);
+    return new_str;
+}
+
+typedef struct ascii_result {
+    char *art;
+    char *err;
+} ascii_result;
+
+ascii_result image_to_string(const image_data *img, bool invert, char *characters) {
+    ascii_result result;
+    if(characters == NULL) {
+        result.art = NULL;
+        result.err = str_dup("Characters given null.");
+        return result;
+    }
+    const size_t chars_length = strlen(characters);
+    if(chars_length == 0) {
+        result.art = NULL;
+        result.err = str_dup("No characters given.");
+        return result;
+    }
+    const size_t char_count = (img->width * img->height) + img->height + 1;
+    char *result_str = malloc(char_count);
+    if(result_str == NULL) {
+        result.art = NULL;
+        result.err = str_dup("Unable to allocate memory.");
+        return result;
+    }
+    size_t result_itr = 0;
     for(int y = 0; y < img->height; y++) {
         for(int x = 0; x < img->width; x++) {
             const double brightness = get_pixel_brightness(img, x, y);
@@ -88,7 +119,9 @@ char* image_to_string(const image_data *img, bool invert, char *characters) {
         result_itr++;
     }
     result_str[result_itr] = '\0';
-    return result_str;
+    result.art = result_str;
+    result.err = NULL;
+    return result;
 }
 
 void open_image(image_data *img, const char *filename) {
@@ -117,19 +150,6 @@ typedef struct config {
     double h_scaling;
     double scaling;
 } config;
-
-char* str_dup(const char *s) {
-    if(s == NULL) {
-        return NULL;
-    }
-    size_t size = strlen(s) + 1;
-    char *new_str = malloc(size);
-    if(new_str == NULL) {
-        return NULL;
-    }
-    strncpy(new_str, s, size);
-    return new_str;
-}
 
 void default_config(config *conf) {
     conf->filename = str_dup("");
@@ -265,14 +285,14 @@ int main(int argc, char **argv) {
     free(conf.filename);
     if(conf.w_scaling != 1.0 || conf.h_scaling != 1.0)
         scale_image(&img, conf.w_scaling, conf.h_scaling);
-    char *art = image_to_string(&img, conf.invert, conf.character_set);
+    ascii_result art = image_to_string(&img, conf.invert, conf.character_set);
     free(conf.character_set);
     stbi_image_free(img.data);
-    if(!art) {
-        fputs("Error creating art string... Unable to allocate memory\n", stderr);
+    if(art.err != NULL) {
+        fprintf(stderr, "Error creating art string: %s\n", art.err);
         return 1;
     }
-    puts(art);
-    free(art);
+    puts(art.art);
+    free(art.art);
     return 0;
 }
