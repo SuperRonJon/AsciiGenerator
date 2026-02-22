@@ -40,35 +40,6 @@ double get_pixel_brightness(const image_data *image, const int x, const int y) {
     return brightness * (alpha / 255.0);
 }
 
-void resize_image(image_data *img, const int new_width, const int new_height) {
-    unsigned char *resized_data = malloc(new_width*new_height*img->channel_count);
-    if(!resized_data) {
-        fputs("Failed to allocate memory for resized image\n", stderr);
-        exit(1);
-    }
-
-    stbir_resize(
-        img->data, img->width, img->height, 0, 
-        resized_data, new_width, new_height, 0, img->channel_count, 
-        STBIR_TYPE_UINT8, STBIR_EDGE_CLAMP, STBIR_FILTER_POINT_SAMPLE
-    );
-
-    if(!resized_data) {
-        fputs("Failed to resize image...\n", stderr);
-        exit(1);
-    }
-    stbi_image_free(img->data);
-    img->data = resized_data;
-    img->width = new_width;
-    img->height = new_height;
-}
-
-void scale_image(image_data *img, const double w_scale, const double h_scale) {
-    const int new_width = (int)(img->width * w_scale);
-    const int new_height = (int)(img->height * h_scale);
-    resize_image(img, new_width, new_height);
-}
-
 char* image_to_string(const image_data *img, bool invert, char *characters) {
     const size_t chars_length = strlen(characters);
     const size_t char_count = (img->width * img->height) + img->height + 1;
@@ -107,6 +78,35 @@ void open_image(image_data *img, const char *filename) {
     img->width = width;
     img->height = height;
     img->channel_count = channel_count;
+}
+
+void resize_image(image_data *img, const int new_width, const int new_height) {
+    unsigned char *resized_data = malloc(new_width*new_height*img->channel_count);
+    if(!resized_data) {
+        fputs("Failed to allocate memory for resized image\n", stderr);
+        exit(1);
+    }
+
+    stbir_resize(
+        img->data, img->width, img->height, 0, 
+        resized_data, new_width, new_height, 0, img->channel_count, 
+        STBIR_TYPE_UINT8, STBIR_EDGE_CLAMP, STBIR_FILTER_POINT_SAMPLE
+    );
+
+    if(!resized_data) {
+        fputs("Failed to resize image...\n", stderr);
+        exit(1);
+    }
+    stbi_image_free(img->data);
+    img->data = resized_data;
+    img->width = new_width;
+    img->height = new_height;
+}
+
+void scale_image(image_data *img, const double w_scale, const double h_scale) {
+    const int new_width = (int)(img->width * w_scale);
+    const int new_height = (int)(img->height * h_scale);
+    resize_image(img, new_width, new_height);
 }
 
 typedef struct config {
