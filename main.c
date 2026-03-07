@@ -17,14 +17,16 @@
 #define VERSION "1.6"
 
 
-typedef struct image_data {
+typedef struct image_data 
+{
     unsigned char *data;
     int height;
     int width;
     int channel_count;
 } image_data;
 
-double get_pixel_brightness(const image_data *image, const int x, const int y) {
+double get_pixel_brightness(const image_data *image, const int x, const int y) 
+{
     const size_t pixel_index = (y * image->width + x) * image->channel_count;
 
     const uint8_t red = (uint8_t)image->data[pixel_index];
@@ -40,16 +42,17 @@ double get_pixel_brightness(const image_data *image, const int x, const int y) {
     return brightness * (alpha / 255.0);
 }
 
-char* image_to_string(const image_data *img, bool invert, char *characters) {
+char* image_to_string(const image_data *img, bool invert, char *characters) 
+{
     const size_t chars_length = strlen(characters);
     const size_t char_count = (img->width * img->height) + img->height + 1;
     char *result_str = malloc(char_count);
     size_t result_itr = 0;
-    if(result_str == NULL) {
+    if (result_str == NULL) {
         return NULL;
     }
-    for(int y = 0; y < img->height; y++) {
-        for(int x = 0; x < img->width; x++) {
+    for (int y = 0; y < img->height; y++) {
+        for (int x = 0; x < img->width; x++) {
             const double brightness = get_pixel_brightness(img, x, y);
             const size_t char_index = (int)(brightness / (255.1 / chars_length));
             result_str[result_itr] = invert ? characters[chars_length - 1 - char_index] : characters[char_index];
@@ -62,13 +65,14 @@ char* image_to_string(const image_data *img, bool invert, char *characters) {
     return result_str;
 }
 
-void open_image(image_data *img, const char *filename) {
+void open_image(image_data *img, const char *filename) 
+{
     int width, height, channel_count;
     unsigned char *data = stbi_load(filename, &width, &height, &channel_count, 0);
-    if(!data) {
+    if (!data) {
         const char *reason = stbi_failure_reason();
         fprintf(stderr, "Error loading image: %s", reason);
-        if(strcmp(reason, "can't fopen") == 0) {
+        if (strcmp(reason, "can't fopen") == 0) {
             fprintf(stderr, " - the file %s may not exist.", filename);
         }
         fputs("\n", stderr);
@@ -80,9 +84,10 @@ void open_image(image_data *img, const char *filename) {
     img->channel_count = channel_count;
 }
 
-void resize_image(image_data *img, const int new_width, const int new_height) {
+void resize_image(image_data *img, const int new_width, const int new_height) 
+{
     unsigned char *resized_data = malloc(new_width*new_height*img->channel_count);
-    if(!resized_data) {
+    if (!resized_data) {
         fputs("Failed to allocate memory for resized image\n", stderr);
         exit(1);
     }
@@ -93,7 +98,7 @@ void resize_image(image_data *img, const int new_width, const int new_height) {
         STBIR_TYPE_UINT8, STBIR_EDGE_CLAMP, STBIR_FILTER_POINT_SAMPLE
     );
 
-    if(!resized_data) {
+    if (!resized_data) {
         fputs("Failed to resize image...\n", stderr);
         exit(1);
     }
@@ -103,13 +108,15 @@ void resize_image(image_data *img, const int new_width, const int new_height) {
     img->height = new_height;
 }
 
-void scale_image(image_data *img, const double w_scale, const double h_scale) {
+void scale_image(image_data *img, const double w_scale, const double h_scale) 
+{
     const int new_width = (int)(img->width * w_scale);
     const int new_height = (int)(img->height * h_scale);
     resize_image(img, new_width, new_height);
 }
 
-typedef struct config {
+typedef struct config 
+{
     char *filename;
     char *character_set;
     bool invert;
@@ -118,20 +125,22 @@ typedef struct config {
     double scaling;
 } config;
 
-char* str_dup(const char *s) {
-    if(s == NULL) {
+char* str_dup(const char *s) 
+{
+    if (s == NULL) {
         return NULL;
     }
     size_t size = strlen(s) + 1;
     char *new_str = malloc(size);
-    if(new_str == NULL) {
+    if (new_str == NULL) {
         return NULL;
     }
     strncpy(new_str, s, size);
     return new_str;
 }
 
-void default_config(config *conf) {
+void default_config(config *conf) 
+{
     conf->filename = str_dup("");
     conf->character_set = str_dup("@%#*+=-:. ");
     conf->invert = false;
@@ -140,11 +149,13 @@ void default_config(config *conf) {
     conf->scaling = 1.0;
 }
 
-void print_version(void) {
+void print_version(void) 
+{
     printf("asciigen - v%s\n", VERSION);
 }
 
-void print_help(void) {
+void print_help(void) 
+{
     puts("Usage:\n       asciigen [options] image.png");
     puts("Options:");
     puts("  -i              inverts light and dark colors. Brightest pixels use densest characters");
@@ -156,30 +167,31 @@ void print_help(void) {
     puts("  -H, --help      Prints help");
 }
 
-void set_config(config *conf, int argc, char **argv) {
+void set_config(config *conf, int argc, char **argv) 
+{
     default_config(conf);
     bool get_filename = true;
     int scaling_token_index = -1;
     int h_scaling_token_index = -1;
     int w_scaling_token_index = -1;
     int custom_characters_index = -1;
-    for(int i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
         char *token = argv[i];
         int index_mod = 1;
-        if(strcmp(token, "--help") == 0) {
+        if (strcmp(token, "--help") == 0) {
             get_filename = false;
             print_help();
             exit(0);
         }
-        else if(strcmp(token, "--version") == 0) {
+        else if (strcmp(token, "--version") == 0) {
             get_filename = false;
             print_version();
             exit(0);
         }
-        else if(token[0] == '-') {
-            for(size_t j = 1; j < strlen(token); j++) {
+        else if (token[0] == '-') {
+            for (size_t j = 1; j < strlen(token); j++) {
                 char currOpt = token[j];
-                switch(currOpt) {
+                switch (currOpt) {
                     case 'i':
                         conf->invert = true;
                         break;
@@ -213,26 +225,26 @@ void set_config(config *conf, int argc, char **argv) {
                 }
             }
         }
-        else if(i == scaling_token_index && i != argc-1) {
+        else if (i == scaling_token_index && i != argc-1) {
             conf->scaling = strtod(argv[i], NULL);
         }
-        else if(i == w_scaling_token_index && i != argc-1) {
+        else if (i == w_scaling_token_index && i != argc-1) {
             conf->w_scaling = strtod(argv[i], NULL);
         }
-        else if(i == h_scaling_token_index && i != argc-1) {
+        else if (i == h_scaling_token_index && i != argc-1) {
             conf->h_scaling = strtod(argv[i], NULL);
         }
-        else if(i == custom_characters_index && i != argc-1) {
-            if(conf->character_set != NULL) {
+        else if (i == custom_characters_index && i != argc-1) {
+            if (conf->character_set != NULL) {
                 free(conf->character_set);
             }
             conf->character_set = str_dup(argv[i]);
         }
     }
-    if(get_filename) {
+    if (get_filename) {
         free(conf->filename);
         conf->filename = str_dup(argv[argc-1]);
-        if(!conf->filename) {
+        if (!conf->filename) {
             fputs("Error allocating memory for filename...\n", stderr);
             exit(1);
         }
@@ -240,19 +252,20 @@ void set_config(config *conf, int argc, char **argv) {
     const bool width_valid = conf->w_scaling > 0.0;
     const bool height_valid = conf->h_scaling > 0.0;
     const bool even_scaling = !width_valid && !height_valid;
-    if(!even_scaling && (!width_valid || !height_valid)) {
+    if (!even_scaling && (!width_valid || !height_valid)) {
         fputs("Invalid scaling parameters.\nIf not using equivalent scaling for height and width (-s) both height and width must be supplied and greater than 0.\n", stderr);
         exit(1);
     }
-    if(even_scaling) {
+    if (even_scaling) {
         conf->w_scaling = conf->scaling;
         conf->h_scaling = conf->scaling;
     }
 
 }
 
-int main(int argc, char **argv) {
-    if(argc < 2) {
+int main(int argc, char **argv) 
+{
+    if (argc < 2) {
         print_help();
         return 0;
     }
@@ -263,12 +276,12 @@ int main(int argc, char **argv) {
     image_data img;
     open_image(&img, conf.filename);
     free(conf.filename);
-    if(conf.w_scaling != 1.0 || conf.h_scaling != 1.0)
+    if (conf.w_scaling != 1.0 || conf.h_scaling != 1.0)
         scale_image(&img, conf.w_scaling, conf.h_scaling);
     char *art = image_to_string(&img, conf.invert, conf.character_set);
     free(conf.character_set);
     stbi_image_free(img.data);
-    if(!art) {
+    if (!art) {
         fputs("Error creating art string... Unable to allocate memory\n", stderr);
         return 1;
     }
