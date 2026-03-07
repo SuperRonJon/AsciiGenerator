@@ -54,7 +54,7 @@ char* image_to_string(const image_data *img, bool invert, char *characters)
     for (int y = 0; y < img->height; y++) {
         for (int x = 0; x < img->width; x++) {
             const double brightness = get_pixel_brightness(img, x, y);
-            const size_t char_index = (int)(brightness / (255.1 / chars_length));
+            const size_t char_index = (size_t)(brightness / (255.1 / chars_length));
             result_str[result_itr] = invert ? characters[chars_length - 1 - char_index] : characters[char_index];
             result_itr++;
         }
