@@ -17,15 +17,15 @@
 #define VERSION "1.6"
 
 
-typedef struct image_data 
+struct image_data 
 {
     unsigned char *data;
     int height;
     int width;
     int channel_count;
-} image_data;
+};
 
-double get_pixel_brightness(const image_data *image, const int x, const int y) 
+double get_pixel_brightness(const struct image_data *image, const int x, const int y) 
 {
     const size_t pixel_index = (y * image->width + x) * image->channel_count;
 
@@ -42,7 +42,7 @@ double get_pixel_brightness(const image_data *image, const int x, const int y)
     return brightness * (alpha / 255.0);
 }
 
-char* image_to_string(const image_data *img, bool invert, char *characters) 
+char* image_to_string(const struct image_data *img, bool invert, char *characters) 
 {
     const size_t chars_length = strlen(characters);
     const size_t char_count = (img->width * img->height) + img->height + 1;
@@ -65,7 +65,7 @@ char* image_to_string(const image_data *img, bool invert, char *characters)
     return result_str;
 }
 
-void open_image(image_data *img, const char *filename) 
+void open_image(struct image_data *img, const char *filename) 
 {
     int width, height, channel_count;
     unsigned char *data = stbi_load(filename, &width, &height, &channel_count, 0);
@@ -84,7 +84,7 @@ void open_image(image_data *img, const char *filename)
     img->channel_count = channel_count;
 }
 
-void resize_image(image_data *img, const int new_width, const int new_height) 
+void resize_image(struct image_data *img, const int new_width, const int new_height) 
 {
     unsigned char *resized_data = malloc(new_width*new_height*img->channel_count);
     if (!resized_data) {
@@ -108,14 +108,14 @@ void resize_image(image_data *img, const int new_width, const int new_height)
     img->height = new_height;
 }
 
-void scale_image(image_data *img, const double w_scale, const double h_scale) 
+void scale_image(struct image_data *img, const double w_scale, const double h_scale) 
 {
     const int new_width = (int)(img->width * w_scale);
     const int new_height = (int)(img->height * h_scale);
     resize_image(img, new_width, new_height);
 }
 
-typedef struct config 
+struct config 
 {
     char *filename;
     char *character_set;
@@ -123,7 +123,7 @@ typedef struct config
     double w_scaling;
     double h_scaling;
     double scaling;
-} config;
+};
 
 char* str_dup(const char *s) 
 {
@@ -139,7 +139,7 @@ char* str_dup(const char *s)
     return new_str;
 }
 
-void default_config(config *conf) 
+void default_config(struct config *conf) 
 {
     conf->filename = str_dup("");
     conf->character_set = str_dup("@%#*+=-:. ");
@@ -167,7 +167,7 @@ void print_help(void)
     puts("  -H, --help      Prints help");
 }
 
-void set_config(config *conf, int argc, char **argv) 
+void set_config(struct config *conf, int argc, char **argv) 
 {
     default_config(conf);
     bool get_filename = true;
@@ -270,10 +270,10 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    config conf;
+    struct config conf;
     set_config(&conf, argc, argv);
     
-    image_data img;
+    struct image_data img;
     open_image(&img, conf.filename);
     free(conf.filename);
     if (conf.w_scaling != 1.0 || conf.h_scaling != 1.0)
