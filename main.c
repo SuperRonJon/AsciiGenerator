@@ -42,7 +42,7 @@ double get_pixel_brightness(const struct image_data *image, const int x, const i
     return brightness * (alpha / 255.0);
 }
 
-char* image_to_string(const struct image_data *img, bool invert, char *characters) 
+char* image_to_string(const struct image_data *img, const bool invert, const char *characters) 
 {
     const size_t chars_length = strlen(characters);
     const size_t char_count = (img->width * img->height) + img->height + 1;
@@ -139,7 +139,7 @@ char* str_dup(const char *s)
     return new_str;
 }
 
-void default_config(struct config *conf) 
+void default_config(struct config *const conf) 
 {
     conf->filename = str_dup("");
     conf->character_set = str_dup("@%#*+=-:. ");
