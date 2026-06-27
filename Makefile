@@ -1,15 +1,51 @@
-build/asciigen: build/main.o 
-	gcc -O2 -o build/asciigen build/main.o -lm
+CC 			?= gcc
+CFLAGS		?= -Wall -Wextra -Werror -O2
+DBGFLAGS	?= -Wall -Wextra -Werror -g
 
-build/main.o: main.c stb_image.h stb_image_resize2.h
-	gcc -O2 -c -std=c99 -Wall -Wextra -o build/main.o main.c
+INSTALL		:= install
+INSTALLBIN	:= $(INSTALL) -m 755
 
-debug: build/debug
+BUILDDIR	?= build
+SRCDIR		?= src
+PREFIX		?= /usr/local
+BINDIR		:= $(PREFIX)/bin
 
-build/debug: main.c stb_image.h stb_image_resize2.h
-	gcc -std=c99 -Wall -Wpedantic -Wextra -o build/debug main.c -lm -g
+ifeq ($(OS),WINDOWS_NT)
+	EXE_EXT := .exe
+else
+	EXE_EXT :=
+endif
 
-all: build/asciigen build/debug
+PROGRAM		:= asciigen
+TARGET		:= $(BUILDDIR)/$(PROGRAM)$(EXE_EXT)
+DBGTARGET	:= $(BUILDDIR)/debug$(EXE_EXT)
+
+SRCS		:= $(SRCDIR)/asciigen.c
+OBJS		:= $(SRCS:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
+
+.PHONY: all clean debug $(PROGRAM) install
+
+$(PROGRAM): $(TARGET)
+
+debug: $(DBGTARGET)
+
+all: $(TARGET) $(DBGTARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -s $^ -lm -o $@
+
+$(DBGTARGET): $(SRCS) | $(BUILDDIR)
+	$(CC) $(DBGFLAGS) $^ -lm -o $@
+
+$(BUILDDIR)/%.o: $(SRCS) | $(BUILDDIR)
+	$(CC) $(CFLAGS) -c $^ -o $@
+
+$(BUILDDIR):
+	@mkdir -p $(BUILDDIR)
+
+install: $(TARGET)
+	$(INSTALL) -d $(DESTDIR)$(BINDIR)
+	$(INSTALLBIN) $(TARGET) $(DESTDIR)$(BINDIR)/$(PROGRAM)$(EXE_EXT)
 
 clean: 
-	rm -f build/asciigen build/debug build/main.o
+	rm -f $(TARGET) $(DBGTARGET) $(OBJS)
