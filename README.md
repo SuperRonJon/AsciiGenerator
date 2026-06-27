@@ -53,21 +53,18 @@ A custom character set can be used with the -c option. A string in quotes should
 ```
 
 ## Building from source commands
+### Make
+```sh
+  make
+  make install #To install to /usr/local/bin on unix/msys
+``` 
 ### CMake
 ```
-  mkdir build
-  cd build
-  cmake ..
-  cmake --build .
+  cmake -B build -DCMAKE_BUILD_TYPE=Release
+  cmake --build build
 ```
-### Make
-
-```
-  mkdir build
-  make
-``` 
  ### Manually
 ```
   mkdir build
-  gcc -O2 -o build/asciigen main.c -lm
+  gcc -o build/asciigen -O2 src/asciigen.c -lm
 ``` 
