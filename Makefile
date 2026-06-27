@@ -10,7 +10,7 @@ SRCDIR		?= src
 PREFIX		?= /usr/local
 BINDIR		:= $(PREFIX)/bin
 
-ifeq ($(OS),WINDOWS_NT)
+ifeq ($(OS),Windows_NT)
 	EXE_EXT := .exe
 else
 	EXE_EXT :=
