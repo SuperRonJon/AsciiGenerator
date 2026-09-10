@@ -17,15 +17,14 @@
 #define VERSION "1.6"
 
 
-struct image_data 
-{
+struct image_data {
     unsigned char *data;
     int height;
     int width;
     int channel_count;
 };
 
-double get_pixel_brightness(const struct image_data *image, const int x, const int y) 
+double get_pixel_brightness(const struct image_data *image, int x, int y) 
 {
     const size_t pixel_index = (y * image->width + x) * image->channel_count;
 
@@ -42,7 +41,7 @@ double get_pixel_brightness(const struct image_data *image, const int x, const i
     return brightness * (alpha / 255.0);
 }
 
-char* image_to_string(const struct image_data *img, const bool invert, const char *characters) 
+char* image_to_string(const struct image_data *img, bool invert, const char *characters) 
 {
     const size_t chars_length = strlen(characters);
     const size_t char_count = (img->width * img->height) + img->height + 1;
@@ -84,7 +83,7 @@ void open_image(struct image_data *img, const char *filename)
     img->channel_count = channel_count;
 }
 
-void resize_image(struct image_data *img, const int new_width, const int new_height) 
+void resize_image(struct image_data *img, int new_width, int new_height) 
 {
     unsigned char *resized_data = malloc(new_width*new_height*img->channel_count);
     if (!resized_data) {
@@ -115,8 +114,7 @@ void scale_image(struct image_data *img, const double w_scale, const double h_sc
     resize_image(img, new_width, new_height);
 }
 
-struct config 
-{
+struct config {
     char *filename;
     char *character_set;
     bool invert;
@@ -139,7 +137,7 @@ char* str_dup(const char *s)
     return new_str;
 }
 
-void default_config(struct config *const conf) 
+void default_config(struct config *conf) 
 {
     conf->filename = str_dup("");
     conf->character_set = str_dup("@%#*+=-:. ");
@@ -182,13 +180,11 @@ void set_config(struct config *conf, int argc, char **argv)
             get_filename = false;
             print_help();
             exit(0);
-        }
-        else if (strcmp(token, "--version") == 0) {
+        } else if (strcmp(token, "--version") == 0) {
             get_filename = false;
             print_version();
             exit(0);
-        }
-        else if (token[0] == '-') {
+        } else if (token[0] == '-') {
             for (size_t j = 1; j < strlen(token); j++) {
                 char currOpt = token[j];
                 switch (currOpt) {
@@ -224,20 +220,15 @@ void set_config(struct config *conf, int argc, char **argv)
                         break;
                 }
             }
-        }
-        else if (i == scaling_token_index && i != argc-1) {
+        } else if (i == scaling_token_index && i != argc-1) {
             conf->scaling = strtod(argv[i], NULL);
-        }
-        else if (i == w_scaling_token_index && i != argc-1) {
+        } else if (i == w_scaling_token_index && i != argc-1) {
             conf->w_scaling = strtod(argv[i], NULL);
-        }
-        else if (i == h_scaling_token_index && i != argc-1) {
+        } else if (i == h_scaling_token_index && i != argc-1) {
             conf->h_scaling = strtod(argv[i], NULL);
-        }
-        else if (i == custom_characters_index && i != argc-1) {
-            if (conf->character_set != NULL) {
+        } else if (i == custom_characters_index && i != argc-1) {
+            if (conf->character_set != NULL)
                 free(conf->character_set);
-            }
             conf->character_set = str_dup(argv[i]);
         }
     }
