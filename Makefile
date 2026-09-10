@@ -20,7 +20,7 @@ PROGRAM		:= asciigen
 TARGET		:= $(BUILDDIR)/$(PROGRAM)$(EXE_EXT)
 DBGTARGET	:= $(BUILDDIR)/debug$(EXE_EXT)
 
-SRCS		:= $(SRCDIR)/asciigen.c
+SRCS		:= $(wildcard $(SRCDIR)/*.c)
 OBJS		:= $(SRCS:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
 
 .PHONY: all clean debug $(PROGRAM) install
@@ -37,8 +37,8 @@ $(TARGET): $(OBJS)
 $(DBGTARGET): $(SRCS) | $(BUILDDIR)
 	$(CC) $(DBGFLAGS) $^ -lm -o $@
 
-$(BUILDDIR)/%.o: $(SRCS) | $(BUILDDIR)
-	$(CC) $(CFLAGS) -c $^ -o $@
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILDDIR):
 	@mkdir -p $(BUILDDIR)
